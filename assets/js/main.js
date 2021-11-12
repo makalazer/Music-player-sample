@@ -185,7 +185,7 @@ const app = {
         const htmls = this.songs.map((song,index) => {
             return `
                 <div class="song" data-index="${index}">
-                    <div class="thumb" style="background-image: url('${song.img}')" >
+                    <div class="thumb" style="background-image: url('.${song.img}')" >
                     </div>
                     <div class="body">
                     <h3 class="title">${song.name}</h3>
@@ -225,7 +225,7 @@ const app = {
     loadCurrentSong: function () {
         heading.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url('${this.currentSong.img}')`;
-        audio.src = this.currentSong.path;
+        audio.src = '.'+this.currentSong.path;
         this.activeCurrentSong();
         this.scrollActiveSong();
     },
