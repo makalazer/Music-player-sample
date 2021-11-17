@@ -19,6 +19,8 @@ const prevBtn = $(".btn-prev");
 const randomBtn = $(".btn-random");
 const repeatBtn = $(".btn-repeat");
 const playlist = $(".playlist");
+const timerDuration = $("#timer-duration");
+const timerCurrent = $("#timer-current");
 const app = {
     isPlaying: false,
     isRandom: false,
@@ -41,43 +43,43 @@ const app = {
         },
         {
             name: "9420",
-            singers: "Andiez",
+            singers: "Mạch Tiểu Đâu",
             path: "/Music/songs/song2.flac",
             img: "/Music/thumbnail/song2.jpg",
         },
         {
             name: "Come and get your love",
-            singers: "Andiez",
+            singers: "Redbone",
             path: "/Music/songs/song3.flac",
             img: "/Music/thumbnail/song3.jpg",
         },
         {
             name: "Một bước yêu vạn dặm đau",
-            singers: "Andiez",
+            singers: "Mr.Siro",
             path: "/Music/songs/song4.flac",
             img: "/Music/thumbnail/song4.jpg",
         },
         {
             name: "Gió vẫn hát",
-            singers: "Andiez",
+            singers: "Long Phạm",
             path: "/Music/songs/song5.flac",
             img: "/Music/thumbnail/song5.jpg",
         },
         {
             name: "Coming Home",
-            singers: "Andiez",
+            singers: "Skyler Grey",
             path: "/Music/songs/song6.flac",
             img: "/Music/thumbnail/song6.jpg",
         },
         {
             name: "All out of love",
-            singers: "Andiez",
+            singers: "Julienne Taylor",
             path: "/Music/songs/song7.flac",
             img: "/Music/thumbnail/song7.jpg",
         },
         {
             name: "500 miles",
-            singers: "Andiez",
+            singers: "Noon",
             path: "/Music/songs/song8.flac",
             img: "/Music/thumbnail/song8.png",
         },
@@ -121,19 +123,21 @@ const app = {
             CDthumbAnimation.play();
         };
         // Seek input
-        Seeking.onchange = function () {
+        Seeking.oninput = function () {
             audio.currentTime = (this.value * audio.duration) / 100;
         };
-        Seeking.ontouchstart = function () {
-            _this.isSeeking = true;
-        };
-        Seeking.ontouchend = function () {
-            _this.isSeeking = false;
+        audio.onloadeddata = function () {
+            Seeking.value = 0;
+            let mins = Math.floor(audio.duration/60);
+            let secs = Math.floor(audio.duration%60);
+            if (secs < 10) {
+                secs = '0' + String(secs);
+              }
+            timerDuration.innerHTML = `/${mins}:${secs}`;
+            _this.updateTimer();
         };
         audio.ontimeupdate = function () {
-            if (!_this.isSeeking) {
-                Seeking.value = (audio.currentTime / audio.duration) * 100;
-            }
+            Seeking.value = (audio.currentTime / audio.duration) * 100;
         };
         //Next/Prev Song
         nextBtn.onclick = function () {
@@ -172,17 +176,17 @@ const app = {
             audio.play();
         };
         // Click song on playlist
-        playlist.onclick= function (e) {
-            let inPlaySong = e.target.closest('.song:not(.active');
-            if ( inPlaySong && !e.target.closest('.option')){
+        playlist.onclick = function (e) {
+            let inPlaySong = e.target.closest(".song:not(.active");
+            if (inPlaySong && !e.target.closest(".option")) {
                 _this.currentIndex = Number(inPlaySong.dataset.index);
                 _this.loadCurrentSong();
                 audio.play();
             }
-        }
+        };
     },
     render: function () {
-        const htmls = this.songs.map((song,index) => {
+        const htmls = this.songs.map((song, index) => {
             return `
                 <div class="song" data-index="${index}">
                     <div class="thumb" style="background-image: url('.${song.img}')" >
@@ -225,7 +229,7 @@ const app = {
     loadCurrentSong: function () {
         heading.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url(".${this.currentSong.img}")`;
-        audio.src = '.'+this.currentSong.path;
+        audio.src = "." + this.currentSong.path;
         this.activeCurrentSong();
         this.scrollActiveSong();
     },
@@ -253,6 +257,16 @@ const app = {
         }
         let activeSong = AllSong[this.currentIndex];
         activeSong.classList.add("active");
+    },
+    updateTimer: function () {
+        setInterval(function() {
+            let mins = Math.floor(audio.currentTime / 60);
+            let secs = Math.floor(audio.currentTime % 60);
+            if (secs < 10) {
+              secs = '0' + String(secs);
+            }
+            timerCurrent.innerHTML =`${mins}:${secs}`; ;
+          }, 1000)
     },
     start: function () {
         this.render();
