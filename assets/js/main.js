@@ -128,16 +128,18 @@ const app = {
         };
         audio.onloadeddata = function () {
             Seeking.value = 0;
-            let mins = Math.floor(audio.duration/60);
-            let secs = Math.floor(audio.duration%60);
+            let mins = Math.floor(audio.duration / 60);
+            let secs = Math.floor(audio.duration % 60);
             if (secs < 10) {
-                secs = '0' + String(secs);
-              }
+                secs = "0" + String(secs);
+            }
             timerDuration.innerHTML = `/${mins}:${secs}`;
             _this.updateTimer();
         };
         audio.ontimeupdate = function () {
-            Seeking.value = (audio.currentTime / audio.duration) * 100;
+            if (audio.duration !== 0) {
+                Seeking.value = (audio.currentTime / audio.duration) * 100;
+            }
         };
         //Next/Prev Song
         nextBtn.onclick = function () {
@@ -259,14 +261,14 @@ const app = {
         activeSong.classList.add("active");
     },
     updateTimer: function () {
-        setInterval(function() {
+        setInterval(function () {
             let mins = Math.floor(audio.currentTime / 60);
             let secs = Math.floor(audio.currentTime % 60);
             if (secs < 10) {
-              secs = '0' + String(secs);
+                secs = "0" + String(secs);
             }
-            timerCurrent.innerHTML =`${mins}:${secs}`; ;
-          }, 1000)
+            timerCurrent.innerHTML = `${mins}:${secs}`;
+        }, 1000);
     },
     start: function () {
         this.render();
